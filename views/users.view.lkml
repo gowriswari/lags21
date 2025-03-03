@@ -1,4 +1,6 @@
 view: users {
+  #label: "test1"
+  view_label: "testing"
   sql_table_name: `venkata_bq.users` ;;
   drill_fields: [id]
 
@@ -73,13 +75,13 @@ view: users {
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
-	id,
-	last_name,
-	first_name,
-	events.count,
-	order_items.count,
-	orders.count
-	]
+  id,
+  last_name,
+  first_name,
+  events.count,
+  order_items.count,
+  orders.count
+  ]
   }
 
 }
