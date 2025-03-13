@@ -7,6 +7,23 @@ view: orders {
     type: number
     sql: ${TABLE}.order_id ;;
   }
+
+  dimension: user_id {
+    label:
+    "
+    {% if _view._name == users %}
+    User's Id
+    {% elsif _view._name == orders %}
+    Order's Id
+    {% else %}
+    ORDER ITEMS's Id
+    {% endif %}
+    "
+    type: number
+    # hidden: yes
+    sql: ${TABLE}.user_id ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [raw, time, date, week, month, quarter, year]
@@ -18,6 +35,7 @@ view: orders {
     sql: ${TABLE}.delivered_at ;;
   }
   dimension: gender {
+    label: " gender"
     type: string
     sql: ${TABLE}.gender ;;
   }
@@ -36,13 +54,9 @@ view: orders {
     sql: ${TABLE}.shipped_at ;;
   }
   dimension: status {
+    label: " status"
     type: string
     sql: ${TABLE}.status ;;
-  }
-  dimension: user_id {
-    type: number
-    # hidden: yes
-    sql: ${TABLE}.user_id ;;
   }
   measure: count {
     type: count

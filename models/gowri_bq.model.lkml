@@ -1,14 +1,30 @@
 connection: "gowri-bigquery"
-
+#label: "Gowri testing"
 # include all the views
 include: "/views/**/*.view.lkml"
+#include: "/test.view.lkml"
+#include: "/test1.dashboard.lookml"
+#include: "/test1/test_model.model.lkml"
+
+fiscal_month_offset: 3
+
+named_value_format: gowri_testing {
+  value_format: "\"€\"0.000,\" K\""
+  strict_value_format: yes
+}
 
 datagroup: gowri_bq_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
+  sql_trigger: SELECT EXTRACT(HOUR FROM CURRENT_TIMESTAMP()) ;;
   max_cache_age: "1 hour"
 }
 
 persist_with: gowri_bq_default_datagroup
+
+#access_grant: test1 {
+#  user_attribute: test_attribute
+#  allowed_values: [ "Ada" ]
+#}
 
 explore: products {
   join: distribution_centers {
@@ -19,6 +35,7 @@ explore: products {
 }
 
 explore: events {
+  sql_always_where: ${created_date} > '2025-01-01' ;;
   join: users {
     type: left_outer
     sql_on: ${events.user_id} = ${users.id} ;;
@@ -27,52 +44,58 @@ explore: events {
 }
 
 explore: order_items {
+ #view_label: "Job owner"
+  view_label: "Events"
   join: users {
+   view_label: "Events"
+    #view_label: "Order Items"
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
     relationship: many_to_one
   }
 
   join: inventory_items {
+    view_label: "Events inventory"
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: many_to_one
   }
 
   join: products {
+    view_label: "Events"
     type: left_outer
     sql_on: ${order_items.product_id} = ${products.id} ;;
     relationship: many_to_one
+    #fields: [products.id]
   }
 
   join: orders {
+   view_label: "Events inventory"
+    #required_access_grants: [test1]
     type: left_outer
     sql_on: ${order_items.order_id} = ${orders.order_id} ;;
     relationship: many_to_one
+    #fields: []
   }
 
   join: distribution_centers {
+    #view_label: "Job owner1"
     type: left_outer
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
     relationship: many_to_one
   }
-# Place in `gowri_bq` model
-    aggregate_table: rollup__inventory_items_created_month__inventory_items_id__inventory_items_product_category__inventory_items_product_department {
-      query: {
-        dimensions: [inventory_items.created_month, inventory_items.id, inventory_items.product_category, inventory_items.product_department]
-        measures: [inventory_items.count]
-        filters: [inventory_items.created_month: "3 years"]
-      }
-
-      materialization: {
-        sql_trigger_value: select CURDATE();;
-      }
-    }
-
 
 }
 
-explore: users {}
+explore: sdt {}
+
+explore: users {
+  #required_access_grants: [test1]
+  access_filter: {
+    field: city
+    user_attribute: test_attribute
+  }
+}
 
 explore: orders {
   join: users {
@@ -82,18 +105,26 @@ explore: orders {
   }
 }
 
-explore: distribution_centers {}
+explore: distribution_centers {
+  #extension: required
+}
 
 explore: inventory_items {
-  join: products {
-    type: left_outer
-    sql_on: ${inventory_items.product_id} = ${products.id} ;;
-    relationship: many_to_one
-  }
+# extends: [distribution_centers]
+  #join: products {
+  #  type: left_outer
+   # sql_on: ${inventory_items.product_id} = ${products.id} ;;
+    #relationship: many_to_one
+  #}
 
-  join: distribution_centers {
-    type: left_outer
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-    relationship: many_to_one
-  }
+  #join: distribution_centers {
+   # type: left_outer
+    #sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+    #relationship: many_to_one
+  #}
 }
+# Place in `gowri_bq` model
+# Place in `gowri_bq` model
+
+
+# Place in `gowri_bq` model
