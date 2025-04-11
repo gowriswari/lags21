@@ -25,30 +25,14 @@ view: order_items {
   dimension: order_id {
     #label: "TESTING2"
     label:
-    "
-    {% if _view._name == users %}
-    ORDER ITEMS ID
-    {% elsif _view._name == orders %}
-    Order's Id
-    {% else %}
-    Gowri
-    {% endif %}
-    "
+    "{% if _view._name == users %}@{test1} USERS{% elsif _view._name == orders %}@{test2} ORDERS{% else %}@{test3} GOWRI{% endif %}"
     type: number
     # hidden: yes
     sql: ${TABLE}.order_id ;;
   }
   dimension: product_id {
     label:
-    "
-    {% if _view._name == users %}
-    User's Id
-    {% elsif _view._name == orders %}
-    Order's Id
-    {% else %}
-    ORDER ITEMS's Id
-    {% endif %}
-    "
+    "{% if _view._name == users %}@{test2}{% elsif _view._name == products %}@{test3}{% else %}@{test1}{% endif %}"
     type: number
     # hidden: yes
     sql: ${products.id} ;;
@@ -74,7 +58,15 @@ view: order_items {
   }
   dimension: user_id {
     label:
-    "{% if _view._name == users %} ORDER ITEMS ID {% elsif _view._name == orders %} Order's Id {% else %} User's Id {% endif %}"
+    "
+    {% if _view._name == users %}
+    REST users
+    {% elsif _view._name == orders %}
+    TEST orders
+    {% else %}
+    WEST
+    {% endif %}
+    "
     type: number
     # hidden: yes
     #view_label: "{% if _view._name == order_items %} TESTING1 {% else %} TESTING2 {% endif %}"
@@ -94,7 +86,7 @@ view: order_items {
   }
 
   parameter: category_to_count {
-    type: string
+    type: number
   }
 
 measure: count_actual1 {

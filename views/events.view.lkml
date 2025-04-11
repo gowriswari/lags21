@@ -1,4 +1,5 @@
 view: events {
+#  extends: [users]
   sql_table_name: `venkata_bq.events` ;;
   drill_fields: [id]
 
@@ -14,6 +15,7 @@ view: events {
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
+   # full_suggestions: no
   }
   dimension_group: created {
     type: time

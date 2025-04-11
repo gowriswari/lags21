@@ -1,5 +1,6 @@
 view: distribution_centers {
   sql_table_name: `venkata_bq.distribution_centers` ;;
+  #extension: required
   drill_fields: [id]
 
   dimension: id {
@@ -22,5 +23,8 @@ view: distribution_centers {
   measure: count {
     type: count
     drill_fields: [id, name, products.count]
+  }
+  set: test {
+    fields: [name,id,count]
   }
 }
